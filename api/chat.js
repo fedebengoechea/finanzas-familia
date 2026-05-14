@@ -35,14 +35,17 @@ export default async function handler(req, res) {
     );
 
     const data = await response.json();
+    console.log('Gemini response:', JSON.stringify(data).slice(0, 500));
 
-    // Translate Gemini response → same format the app expects
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    console.log('Extracted text:', text.slice(0, 300));
+
     return res.status(200).json({
       content: [{ type: 'text', text }]
     });
 
   } catch (error) {
+    console.error('Error:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }

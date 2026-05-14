@@ -56,7 +56,11 @@ Si describe un INGRESO (sueldo, cobré, me pagaron, alquiler, dividendos, venta,
 Si NO es movimiento:
 {"type":"none","reply":"respuesta amigable breve"}`;
   try {
-    return JSON.parse((await callClaude([{ role:"user", content:text }], system)).replace(/```json|```/g,"").trim());
+    const raw = await callClaude([{ role:"user", content:text }], system);
+    // Extract JSON from response (handles markdown fences and extra text)
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON found");
+    return JSON.parse(match[0]);
   } catch {
     return { type:"none", reply:"No pude entender ese mensaje 😅" };
   }
